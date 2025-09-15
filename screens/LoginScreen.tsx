@@ -3,6 +3,7 @@ import * as LocalAuthentication from "expo-local-authentication";
 import { MaterialCommunityIcons as Icon } from "@expo/vector-icons";
 
 import { Alert, SafeAreaView, TouchableOpacity, Text, StyleSheet } from "react-native";
+import { globalStyles, colors, typography, spacing } from '../src/theme'; 
 
 export default function LoginScreen({ navigation }: any) {
 
@@ -12,21 +13,21 @@ export default function LoginScreen({ navigation }: any) {
       const temBiometria = await LocalAuthentication.isEnrolledAsync();
       const validacaoBiometrica = await LocalAuthentication.authenticateAsync();
 
-      if (!temLeitor) return Alert.alert('nao tem leitor');
-      if (!temBiometria) return Alert.alert('Sem digital');
-      if (validacaoBiometrica) return navigation.navigate('Home');
+      if (!temLeitor) return Alert.alert('Dispositivo não possui autenticação biométrica.');
+      if (!temBiometria) return Alert.alert('Nenhuma biometria cadastrada neste dispositivo.');
+      if (validacaoBiometrica.success) return navigation.navigate('Home');
     } catch (err) {
-      Alert.alert("Ocorreu um erro no processo de biométrico!" + err);
+      Alert.alert("Ocorreu um erro no processo biométrico!", "Por favor, tente novamente mais tarde.");
+      console.error(err);
     }
-
   }, [navigation]);
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Acesse com sua biometria</Text>
+      <Text style={styles.title}>Acesso seguro com biometria</Text>
 
       <TouchableOpacity style={styles.fingerprintButton} onPress={autenticar}>
-        <Icon name="fingerprint" size={90} color="#4CAF50" />
+        <Icon name="fingerprint" size={90} color={"white"} />
       </TouchableOpacity>
 
       <Text style={styles.infoText}>Toque no ícone para autenticar</Text>
@@ -37,37 +38,32 @@ export default function LoginScreen({ navigation }: any) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F5F5F5",
+    backgroundColor: colors.background,
     justifyContent: "center",
     alignItems: "center",
-    padding: 20,
+    padding: spacing.medium,
   },
   title: {
-    fontSize: 22,
-    fontWeight: "bold",
-    color: "#333",
-    marginBottom: 30,
+    ...typography.title,
+    color: colors.text,
+    marginBottom: spacing.large * 2,
     textAlign: "center",
-    flexWrap: "wrap",
-    paddingHorizontal: 10,
-    width: "100%",
   },
   fingerprintButton: {
-    backgroundColor: "#FFF",
-    padding: 25,
+    backgroundColor: colors.secondary,
+    padding: spacing.large * 2,
     borderRadius: 100,
-    marginBottom: 20,
+    marginBottom: spacing.large,
     elevation: 6,
-    shadowColor: "#000",
-    shadowOpacity: 0.2,
+    shadowColor: colors.text,
+    shadowOpacity: 0.3,
     shadowRadius: 5,
+    shadowOffset: { width: 0, height: 3 },
   },
   infoText: {
-    fontSize: 16,
-    color: "#666",
+    ...typography.text,
+    color: colors.text,
     textAlign: "center",
-    flexWrap: "wrap",
-    paddingHorizontal: 20,
-    width: "100%",
+    marginTop: spacing.medium,
   },
 });

@@ -10,6 +10,7 @@ import {
 import { carregarDados } from "../config/database";
 import { Audio } from "expo-av";
 import { Feather } from "@expo/vector-icons";
+import { globalStyles, colors, typography, spacing } from '../src/theme' 
 
 export default function PlayListScreen() {
   const [lista, setLista] = useState<any[]>([]);
@@ -25,20 +26,19 @@ export default function PlayListScreen() {
     buscarMusicas();
   }, []);
 
-  useEffect(() =>{
+  useEffect(() => {
     return () => {
-      if(som){
+      if (som) {
         (async () => {
           try {
-            await som.unloadAsync();         
-          } catch (e){
-            console.log("Erro ao descarregar som:",e)
+            await som.unloadAsync();
+          } catch (e) {
+            console.log("Erro ao descarregar som:", e);
           }
         })();
       }
     };
-    
-  },[som])
+  }, [som]);
 
   const tocarMusica = async (index: number) => {
     try {
@@ -54,13 +54,11 @@ export default function PlayListScreen() {
       setTocando(true)
 
       sound.setOnPlaybackStatusUpdate((status) => {
-
-        if (!status.isLoaded){
+        if (!status.isLoaded) {
           return;
         }
 
-
-        if (status.didJustFinish && status.isLoaded && !status.isLooping){
+        if (status.didJustFinish && status.isLoaded && !status.isLooping) {
           const proximoIndex = (index + 1) % lista.length
           tocarMusica(proximoIndex);
         }
@@ -108,87 +106,94 @@ export default function PlayListScreen() {
         keyExtractor={(item) => item.id.toString()}
         contentContainerStyle={styles.listContainer}
         renderItem={({ item, index }) => (
-          <View style={styles.listItem}>
-            <TouchableOpacity onPress={() => tocarMusica(index)}>
-              {incremento === index ? (
-                <View style={styles.musicTocando}>
-                  <Text>{item.nome}</Text>
-                </View>
-              ) : (
-                <View style={styles.view}>
-                  <Text>{item.nome}</Text>
-                </View>
-              )}
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity
+            style={[styles.listItem, incremento === index && styles.musicPlaying]}
+            onPress={() => tocarMusica(index)}
+          >
+            <Text
+              style={[
+                typography.text,
+                incremento === index ? styles.musicPlayingText : null
+              ]}
+            >
+              {item.nome}
+            </Text>
+          </TouchableOpacity>
         )}
       />
 
-      <TouchableOpacity style={styles.buttonNext} onPress={anterior}>
-        <Feather name="skip-back" size={20} color="#000000" />
-      </TouchableOpacity>
+      <View style={styles.nowPlayingContainer}>
+        <Text style={styles.nowPlayingText}>
+          {lista.length > 0 ? lista[incremento].nome : "Nenhuma música"}
+        </Text>
+      </View>
 
-      <TouchableOpacity style={styles.buttonPlay} onPress={togglePlayPause}>
-        {tocando ? (
-          <View style={styles.view}>
-            <Feather name="pause" size={20} color={"black"} />
-            <Text>Pausar</Text>
-          </View>
-        ) : (
-          <View style={styles.view}>
-            <Feather name="play" size={20} color={"black"} />
-            <Text>Play</Text>
-          </View>
-        )}
-      </TouchableOpacity>
+      <View style={styles.controlsContainer}>
+        <TouchableOpacity style={styles.buttonNext} onPress={anterior}>
+          <Feather name="skip-back" size={20} color={colors.text} />
+        </TouchableOpacity>
 
-      <TouchableOpacity style={styles.buttonNext} onPress={proxima}>
-        <Feather name="skip-forward" size={20} color="#000000" />
-      </TouchableOpacity>
+        <TouchableOpacity style={styles.buttonPlay} onPress={togglePlayPause}>
+          <Feather name={tocando ? "pause" : "play"} size={20} color={colors.text} />
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.buttonNext} onPress={proxima}>
+          <Feather name="skip-forward" size={20} color={colors.text} />
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 }
 
-export const styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     flex: 1,
-    flexDirection: "row",
-    alignItems: "flex-end",
-    justifyContent: "center",
-    marginBottom: 100,
-    gap: 10,
-  },
-  buttonPlay: {
-    padding: 20,
-    backgroundColor: "#ccc",
-    borderRadius: 10,
-  },
-  buttonNext: {
-    padding: 20,
-    backgroundColor: "#ccc",
-    borderRadius: 10,
-  },
-  view: {
-    justifyContent: "center",
-    alignItems: "center",
-    flexDirection: "row",
+    backgroundColor: colors.background, 
+    padding: spacing.medium,
   },
   listContainer: {
-    paddingBottom: 20,
+    paddingBottom: 180, 
   },
   listItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#FFF",
-    padding: 15,
-    marginBottom: 10,
+    padding: spacing.medium,
+    marginBottom: spacing.small,
     borderRadius: 8,
-    elevation: 3,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
+    backgroundColor: colors.secondary,
+    alignItems: 'center',
   },
-  musicTocando: {
-    backgroundColor: "#15fa00ff",
+  musicPlaying: {
+    backgroundColor: colors.primary,
+  },
+  musicPlayingText: {
+    color: "#fff",
+    fontWeight: "bold",
+  },
+  nowPlayingContainer: {
+    width: "100%",
+    alignItems: "center",
+    marginBottom: spacing.large,
+  },
+  nowPlayingText: {
+    ...typography.title,
+    textAlign: "center",
+    marginBottom:300,
+  },
+  controlsContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+    bottom: 50,
+  },
+  buttonPlay: {
+    padding: spacing.medium,
+    backgroundColor: colors.button,
+    borderRadius: 50,
+    marginHorizontal: spacing.medium,
+  },
+  buttonNext: {
+    padding: spacing.medium,
+    backgroundColor: colors.secondary,
+    borderRadius: 50,
   },
 });

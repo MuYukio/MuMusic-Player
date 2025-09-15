@@ -20,7 +20,7 @@ Este projeto utiliza **Expo** para facilitar o desenvolvimento e testes em dispo
 - [React Native](https://reactnative.dev/)
 - [Expo](https://expo.dev/)
 - [Expo Audio](https://docs.expo.dev/versions/latest/sdk/audio/)
-- [SQLite / AsyncStorage] (ou outra forma de persistência que você esteja usando)
+- [SQLite / AsyncStorage] 
 - [React Navigation](https://reactnavigation.org/)
 
 ---

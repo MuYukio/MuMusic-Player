@@ -34,7 +34,8 @@ git clone https://github.com/MuYukio/MuMusic-Player.git
 cd DM
 
 
-## 2. Instale as dependências do projeto:
+2. Instale as dependências do projeto:
+```bash
 npm install
 # ou
 yarn install

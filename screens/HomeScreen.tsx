@@ -10,21 +10,21 @@ import {
 import * as DocumentPicker from "expo-document-picker";
 import { MaterialCommunityIcons as Icon } from "@expo/vector-icons";
 
-import { carregarDados, inserir, limparBanco, remover } from "../config/database";
+import { carregarDados, inserir, remover } from "../config/database";
+
+// Importe os estilos do seu arquivo de tema
+import { globalStyles, colors, typography, spacing } from '../src/theme';
 
 export default function Home({ navigation }) {
-
   const [musicas, setMusicas] = useState([]);
-
 
   useEffect(() => {
     const carregarMusicas = async () => {
       const salvas = await carregarDados();
-      setMusicas(salvas || [])
+      setMusicas(salvas || []);
     };
     carregarMusicas();
   }, []);
-
 
   const escolherMusica = async () => {
     const resultado = await DocumentPicker.getDocumentAsync({
@@ -35,25 +35,24 @@ export default function Home({ navigation }) {
 
     if (!resultado.canceled) {
       for (let arq of resultado.assets)
-        await inserir(arq.name, arq.uri)
+        await inserir(arq.name, arq.uri);
     }
 
-    const atualizadas = await carregarDados()
+    const atualizadas = await carregarDados();
     setMusicas(atualizadas);
-  }
-
+  };
 
   const removerMusica = async (id: number) => {
     await remover(id);
     const atualizadas = await carregarDados();
-    setMusicas(atualizadas)
-  }
+    setMusicas(atualizadas);
+  };
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.topArea}>
-        <TouchableOpacity onPress={escolherMusica}>
-          <Text style={styles.addButtonText}>Escolher música</Text>
+        <TouchableOpacity onPress={escolherMusica} style={styles.addButton}>
+          <Text style={styles.addButtonText}>Escolher Música</Text>
         </TouchableOpacity>
 
         <FlatList
@@ -61,7 +60,6 @@ export default function Home({ navigation }) {
           keyExtractor={(item) => item.id.toString()}
           contentContainerStyle={styles.listContainer}
           renderItem={({ item }) => (
-
             <View style={styles.listItem}>
               <View style={styles.musicInfo}>
                 <Text style={styles.musicText}>{item.nome}</Text>
@@ -71,7 +69,9 @@ export default function Home({ navigation }) {
                 style={styles.removeButton}
                 onPress={() => removerMusica(item.id)}
               >
-                <Text style={styles.removeButtonText}> X </Text>
+                <Text style={styles.removeButtonText}>
+                  <Icon name="close" size={16} color={colors.background} />
+                </Text>
               </TouchableOpacity>
             </View>
           )}
@@ -83,7 +83,7 @@ export default function Home({ navigation }) {
           onPress={() => navigation.navigate("PlayList")}
           style={styles.checkButton}
         >
-          <Icon name="check" size={28} color="#FFF" />
+          <Icon name="play" size={28} color={colors.background} />
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -93,54 +93,58 @@ export default function Home({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F5F5F5",
+    backgroundColor: colors.background, // Fundo de pergaminho
   },
   topArea: {
     flex: 1,
-    padding: 20,
+    padding: spacing.medium,
   },
   bottomArea: {
-    padding: 20,
+    padding: spacing.medium,
     borderTopWidth: 1,
-    borderColor: "#ddd",
-    backgroundColor: "#FFF",
+    borderColor: colors.secondary, // Borda sutil
+    backgroundColor: colors.background,
     alignItems: "center",
-    marginBottom: 40
+    marginBottom: spacing.large,
   },
   addButton: {
-    backgroundColor: "#4CAF50",
-    padding: 15,
+    backgroundColor: colors.primary, // Vermelho de outono
+    padding: spacing.medium,
     borderRadius: 8,
-    marginBottom: 15,
+    marginBottom: spacing.medium,
     alignItems: "center",
+    elevation: 4,
+    shadowColor: colors.text,
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
   },
   addButtonText: {
-    color: "#3519b4",
-    fontSize: 16,
-    fontWeight: "bold",
-    marginBottom: 20,
+    ...typography.buttonText,
+    color: colors.background,
   },
   checkButton: {
-    backgroundColor: "#2196F3",
+    backgroundColor: colors.primary, // Vermelho para o botão de "play"
     width: 60,
     height: 60,
     borderRadius: 30,
     justifyContent: "center",
     alignItems: "center",
     elevation: 6,
-    shadowColor: "#000",
-    shadowOpacity: 0.2,
+    shadowColor: colors.text,
+    shadowOpacity: 0.3,
     shadowRadius: 4,
+    shadowOffset: { width: 0, height: 3 },
   },
   listContainer: {
-    paddingBottom: 20,
+    paddingBottom: spacing.large,
   },
   listItem: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#FFF",
-    padding: 15,
-    marginBottom: 10,
+    backgroundColor: colors.secondary, // Marrom claro para o item da lista
+    padding: spacing.medium,
+    marginBottom: spacing.small,
     borderRadius: 8,
     elevation: 3,
     shadowColor: "#000",
@@ -151,18 +155,17 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   musicText: {
-    fontSize: 16,
-    color: "#333",
+    ...typography.text,
+    color: colors.background, 
   },
   removeButton: {
-    marginLeft: 10,
-    backgroundColor: "#E53935",
+    marginLeft: spacing.small,
+    backgroundColor: colors.primary, 
     borderRadius: 20,
-    padding: 8,
+    padding: spacing.small,
   },
   removeButtonText: {
-    color: "#FFF",
+    color: colors.background,
     fontSize: 16,
   },
 });
-

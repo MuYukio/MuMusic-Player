@@ -34,19 +34,19 @@ git clone https://github.com/MuYukio/MuMusic-Player.git
 cd DM
 
 
-2. Instale as dependências do projeto:
+## 2. Instale as dependências do projeto:
 npm install
 # ou
 yarn install
 
-3. Instale o Expo CLI globalmente (caso ainda não tenha):
+## 3. Instale o Expo CLI globalmente (caso ainda não tenha):
 
 npm install -g expo-cli
 
-Inicie o servidor do Expo:
+## 4. Inicie o servidor do Expo:
 expo start
 
-Abra o aplicativo no seu dispositivo:
+## 5. Abra o aplicativo no seu dispositivo:
 
 iOS: Use o app Expo Go e escaneie o QR code
 
